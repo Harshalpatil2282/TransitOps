@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from "react";
 import {
-  Truck, Users, Route, Wrench, Activity, TrendingUp,
-  RefreshCw, ArrowRight, Clock
+  Truck, CheckCircle, Wrench, Navigation, Clock,
+  UserCheck, Activity
 } from "lucide-react";
-import Link from "next/link";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from "recharts";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 interface DashboardData {
   kpis: {
@@ -20,180 +16,162 @@ interface DashboardData {
     pendingTrips: number;
     driversOnDuty: number;
     fleetUtilization: number;
-    totalVehicles: number;
   };
   recentTrips: any[];
   vehicleStatusBreakdown: { status: string; count: number }[];
 }
 
-const STATUS_COLORS = ["#10b981", "#60a5fa", "#f59e0b", "#6b7280"];
-
-function getBadgeClass(status: string) {
-  const map: Record<string, string> = {
-    AVAILABLE: "badge-available", ON_TRIP: "badge-on-trip", IN_SHOP: "badge-in-shop",
-    RETIRED: "badge-retired", DRAFT: "badge-draft", DISPATCHED: "badge-dispatched",
-    COMPLETED: "badge-completed", CANCELLED: "badge-cancelled",
-  };
-  return `badge ${map[status] ?? "badge-draft"}`;
-}
-
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  
+  const [filters, setFilters] = useState({
+    vehicleType: "All",
+    status: "All",
+    region: ""
+  });
 
   const load = async () => {
     setLoading(true);
-    const res = await fetch("/api/dashboard");
+    const params = new URLSearchParams();
+    if (filters.vehicleType !== "All") params.append("vehicleType", filters.vehicleType);
+    if (filters.status !== "All") params.append("status", filters.status);
+    if (filters.region) params.append("region", filters.region);
+    
+    const res = await fetch(`/api/dashboard?${params.toString()}`);
     if (res.ok) {
       const json = await res.json();
       if (json.success) setData(json.data);
     }
     setLoading(false);
+    setLastRefreshed(new Date());
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [filters]);
+
+  useEffect(() => {
+    const interval = setInterval(() => load(), 30000);
+    return () => clearInterval(interval);
+  }, [filters]);
 
   const kpis = [
-    { label: "Active Vehicles", value: data?.kpis.activeVehicles ?? 0, icon: Truck, color: "text-blue-400", bg: "bg-blue-500/10" },
-    { label: "Available Vehicles", value: data?.kpis.availableVehicles ?? 0, icon: Truck, color: "text-green-400", bg: "bg-green-500/10" },
-    { label: "In Maintenance", value: data?.kpis.inMaintenance ?? 0, icon: Wrench, color: "text-amber-400", bg: "bg-amber-500/10" },
-    { label: "Active Trips", value: data?.kpis.activeTrips ?? 0, icon: Route, color: "text-blue-400", bg: "bg-blue-500/10" },
-    { label: "Pending Trips", value: data?.kpis.pendingTrips ?? 0, icon: Clock, color: "text-gray-400", bg: "bg-gray-500/10" },
-    { label: "Drivers On Duty", value: data?.kpis.driversOnDuty ?? 0, icon: Users, color: "text-purple-400", bg: "bg-purple-500/10" },
+    { label: "Active Vehicles", value: data?.kpis.activeVehicles ?? 0, icon: Truck, color: "text-blue-400" },
+    { label: "Available Vehicles", value: data?.kpis.availableVehicles ?? 0, icon: CheckCircle, color: "text-green-400" },
+    { label: "In Maintenance", value: data?.kpis.inMaintenance ?? 0, icon: Wrench, color: "text-amber-400" },
+    { label: "Active Trips", value: data?.kpis.activeTrips ?? 0, icon: Navigation, color: "text-blue-400" },
+    { label: "Pending Trips", value: data?.kpis.pendingTrips ?? 0, icon: Clock, color: "text-gray-400" },
+    { label: "Drivers On Duty", value: data?.kpis.driversOnDuty ?? 0, icon: UserCheck, color: "text-purple-400" },
+    { label: "Fleet Utilization", value: `${data?.kpis.fleetUtilization ?? 0}%`, icon: Activity, color: "text-amber-400" },
   ];
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Operations Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Real-time overview of your fleet operations</p>
+          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+          {lastRefreshed && (
+            <p className="text-sm text-slate-400 mt-1">
+              Last refreshed: {lastRefreshed.toLocaleTimeString()}
+            </p>
+          )}
         </div>
-        <button onClick={load} className="btn-secondary">
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-          Refresh
-        </button>
       </div>
 
-      {/* Fleet Utilization Banner */}
-      {data && (
-        <div className="mb-6 p-5 rounded-12 bg-gradient-to-r from-amber-500/10 to-transparent border border-amber-500/20">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Activity size={16} className="text-amber-400" />
-              <span className="text-sm font-semibold text-amber-400">Fleet Utilization</span>
-            </div>
-            <span className="text-xl font-bold text-amber-400">{data.kpis.fleetUtilization}%</span>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${data.kpis.fleetUtilization}%` }} />
-          </div>
-          <p className="text-xs text-gray-500 mt-2">
-            {data.kpis.activeVehicles} of {data.kpis.totalVehicles} non-retired vehicles on trip
-          </p>
-        </div>
-      )}
+      {/* Filter Bar */}
+      <div className="flex items-center gap-4 mb-6 justify-end">
+        <select
+          value={filters.vehicleType}
+          onChange={(e) => setFilters({ ...filters, vehicleType: e.target.value })}
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        >
+          <option value="All">Vehicle Type: All</option>
+          <option value="Van">Van</option>
+          <option value="Truck">Truck</option>
+          <option value="Bus">Bus</option>
+          <option value="Bike">Bike</option>
+        </select>
+        <select
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        >
+          <option value="All">Status: All</option>
+          <option value="Available">Available</option>
+          <option value="On Trip">On Trip</option>
+          <option value="In Shop">In Shop</option>
+          <option value="Retired">Retired</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Region"
+          value={filters.region}
+          onChange={(e) => setFilters({ ...filters, region: e.target.value })}
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        />
+      </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {kpis.map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="kpi-card">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+        {kpis.map(({ label, value, icon: Icon, color }) => (
+          <div key={label} className="bg-slate-800 rounded-xl p-5 border border-slate-700">
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-gray-500 font-medium mb-1">{label}</p>
-                <p className="text-3xl font-bold text-white">{loading ? "—" : value}</p>
-              </div>
-              <div className={`p-2 rounded-8 ${bg}`}>
-                <Icon size={18} className={color} />
-              </div>
+              <p className="text-sm text-slate-400">{label}</p>
+              <Icon size={18} className="text-slate-600" />
             </div>
+            <p className="text-3xl font-bold text-white mt-2">
+              {loading ? (
+                <span className="animate-pulse">—</span>
+              ) : (
+                value
+              )}
+            </p>
           </div>
         ))}
       </div>
 
-      {/* Charts + Recent Trips */}
+      {/* Bottom Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Vehicle Status Pie */}
-        <div className="glass-card p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Fleet Status</h3>
-          {data && (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={data.vehicleStatusBreakdown.filter(d => d.count > 0)}
-                  dataKey="count"
-                  nameKey="status"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  label={({ name, value }) => `${name.replace("_", " ")}: ${value}`}
-                  labelLine={false}
-                >
-                  {data.vehicleStatusBreakdown.map((_, i) => (
-                    <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ background: "#1a1a28", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", fontSize: "12px" }}
-                  labelStyle={{ color: "#f1f1f5" }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-          {data && (
-            <div className="mt-3 space-y-2">
-              {data.vehicleStatusBreakdown.map(({ status, count }, i) => (
-                <div key={status} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ background: STATUS_COLORS[i] }} />
-                    <span className="text-gray-400">{status.replace("_", " ")}</span>
-                  </div>
-                  <span className="font-semibold text-white">{count}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Recent Trips */}
-        <div className="glass-card p-5 col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white">Recent Trips</h3>
-            <Link href="/trips" className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1">
-              View all <ArrowRight size={11} />
-            </Link>
-          </div>
+        <div className="lg:col-span-2 bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h2 className="text-lg font-semibold text-white mb-4">Recent Trips</h2>
           {loading ? (
             <div className="space-y-3">
-              {[1,2,3].map(i => (
-                <div key={i} className="h-12 rounded-8 bg-white/3 animate-pulse" />
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-12 bg-slate-700 rounded-lg animate-pulse" />
               ))}
             </div>
           ) : data?.recentTrips.length === 0 ? (
-            <div className="text-center py-10 text-gray-600 text-sm">No trips yet</div>
+            <div className="text-center py-10 text-slate-400">
+              <Clock size={48} className="mx-auto mb-3 text-slate-600" />
+              <p>No trips yet</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="data-table">
+              <table className="w-full">
                 <thead>
-                  <tr>
-                    <th>Route</th>
-                    <th>Vehicle</th>
-                    <th>Driver</th>
-                    <th>Status</th>
+                  <tr className="text-left text-sm text-slate-400 border-b border-slate-700">
+                    <th className="pb-3">Trip</th>
+                    <th className="pb-3">Route</th>
+                    <th className="pb-3">Vehicle</th>
+                    <th className="pb-3">Driver</th>
+                    <th className="pb-3">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.recentTrips.map((trip: any) => (
-                    <tr key={trip.id}>
-                      <td>
-                        <span className="font-medium">{trip.source}</span>
-                        <span className="text-gray-600 mx-1">→</span>
-                        <span className="font-medium">{trip.destination}</span>
+                  {data?.recentTrips.slice(0, 5).map((trip: any) => (
+                    <tr key={trip.id} className="border-b border-slate-700/50">
+                      <td className="py-3 font-mono text-xs text-slate-400">
+                        {trip.id.slice(0, 8)}
                       </td>
-                      <td className="text-gray-400">{trip.vehicle?.regNo}</td>
-                      <td className="text-gray-400">{trip.driver?.name}</td>
-                      <td><span className={getBadgeClass(trip.status)}>{trip.status}</span></td>
+                      <td className="py-3 text-slate-100">
+                        {trip.source} → {trip.destination}
+                      </td>
+                      <td className="py-3 text-slate-400">{trip.vehicle?.regNo}</td>
+                      <td className="py-3 text-slate-400">{trip.driver?.name}</td>
+                      <td className="py-3">
+                        <StatusBadge status={trip.status} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -201,22 +179,46 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { href: "/fleet", label: "Add Vehicle", icon: Truck, color: "amber" },
-          { href: "/drivers", label: "Add Driver", icon: Users, color: "blue" },
-          { href: "/trips", label: "Create Trip", icon: Route, color: "green" },
-          { href: "/maintenance", label: "Log Maintenance", icon: Wrench, color: "orange" },
-        ].map(({ href, label, icon: Icon }) => (
-          <Link key={href} href={href} className="glass-card p-4 flex items-center gap-3 hover:border-amber-500/20 transition-colors group">
-            <Icon size={16} className="text-amber-400 group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-gray-300">{label}</span>
-            <ArrowRight size={12} className="ml-auto text-gray-600 group-hover:text-amber-400 transition-colors" />
-          </Link>
-        ))}
+        {/* Vehicle Status Breakdown */}
+        <div className="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h2 className="text-lg font-semibold text-white mb-4">Fleet Status</h2>
+          {data && (
+            <div className="space-y-3">
+              {data.vehicleStatusBreakdown.map(({ status, count }) => {
+                const colors: Record<string, string> = {
+                  AVAILABLE: "bg-green-500",
+                  ON_TRIP: "bg-blue-500",
+                  IN_SHOP: "bg-amber-500",
+                  RETIRED: "bg-slate-500",
+                };
+                return (
+                  <div key={status} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${colors[status] || "bg-slate-500"}`} />
+                      <span className="text-slate-300">{status.replace("_", " ")}</span>
+                    </div>
+                    <span className="font-bold text-white">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* Fleet Utilization Progress */}
+          <div className="mt-6 pt-4 border-t border-slate-700">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-slate-400">Fleet Utilization</span>
+              <span className="text-sm font-bold text-amber-400">{data?.kpis.fleetUtilization ?? 0}%</span>
+            </div>
+            <div className="w-full bg-slate-700 rounded-full h-2">
+              <div
+                className="bg-amber-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${data?.kpis.fleetUtilization ?? 0}%` }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
