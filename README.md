@@ -36,6 +36,13 @@ This creates a cascade of real-world problems:
 
 ## 📸 Screenshots
 
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/b1d74eea-fb4b-4531-af4e-c860a32ec593" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/2273aecf-5b06-4f76-b157-ef8764cbbe3a" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/1771a1e3-2eb6-4501-a381-859487f2a72f" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/ec4d348b-f14f-4441-b078-8208ec923944" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/1084a283-0d8e-45f9-ab58-4195946d4187" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/2a856d08-d2f8-4702-8ff7-e46a670bc6c6" />
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/cb84c44b-b4dd-4864-8c25-f9b3173f0d02" />
 
 
 ### Dashboard
