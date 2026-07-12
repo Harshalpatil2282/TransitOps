@@ -36,50 +36,58 @@ This creates a cascade of real-world problems:
 
 ## 📸 Screenshots
 
-> *(Add screenshots here after deployment)*
+
 
 ### Dashboard
-<!-- Replace with actual screenshot -->
-```
-📁 Add screenshot: screenshots/dashboard.png
-```
-![Dashboard](screenshots/dashboard.png)
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/5b32e1a6-a0fa-4f83-aeb6-b1296f6129e6" />
+
+
 
 ---
 
 ### Fleet Management
 <!-- Replace with actual screenshot -->
-```
-📁 Add screenshot: screenshots/fleet.png
-```
-![Fleet Management](screenshots/fleet.png)
+
+
+<img width="1280" height="783" alt="image" src="https://github.com/user-attachments/assets/0eb03337-b79c-41e5-b216-bfe57ab79586" />
+
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/23bd70a7-7b3b-495e-924e-59cfdef38122" />
+
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/454e174f-9f53-4855-8673-7b7881acaaa4" />
+
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/80423d14-da3b-4e80-a280-e38299a510a8" />
+
+
+
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/2ccf2d34-c47d-405a-a31f-7de5765418a7" />
+
 
 ---
 
 ### Trip Dispatch
-<!-- Replace with actual screenshot -->
-```
-📁 Add screenshot: screenshots/trips.png
-```
-![Trip Dispatch](screenshots/trips.png)
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/c2e0d47d-6f79-452d-a015-8dca68c86bd5" />
+
+
+
+<img width="1280" height="783" alt="image" src="https://github.com/user-attachments/assets/4cee8b00-a8e4-4248-801c-971441c2fb4d" />
+
 
 ---
 
 ### Analytics
 <!-- Replace with actual screenshot -->
-```
-📁 Add screenshot: screenshots/analytics.png
-```
-![Analytics](screenshots/analytics.png)
+
+
+<img width="1280" height="736" alt="image" src="https://github.com/user-attachments/assets/4f6b447a-ac68-47f0-9e73-0e399adcbdcf" />
+
+<img width="1280" height="736" alt="image" src="https://github.com/user-attachments/assets/fbd98d55-870f-4b14-bd9e-9d57df531742" />
 
 ---
 
 ### Login Page
-<!-- Replace with actual screenshot -->
-```
-📁 Add screenshot: screenshots/login.png
-```
-![Login](screenshots/login.png)
+
+
+<img width="1280" height="829" alt="image" src="https://github.com/user-attachments/assets/a6eb4164-c13a-4af1-9b61-7061859d4e09" />
 
 ---
 
