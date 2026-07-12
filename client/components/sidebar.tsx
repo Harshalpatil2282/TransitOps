@@ -1,23 +1,24 @@
 'use client'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Truck, Users, MapPin, Wrench,
-  Fuel, BarChart2, Settings, LogOut, Zap
+  Fuel, BarChart2, Settings, LogOut
 } from 'lucide-react'
 
 type Role = 'FLEET_MANAGER' | 'DISPATCHER' | 'SAFETY_OFFICER' | 'FINANCIAL_ANALYST'
 
 const navItems = [
-  { label: 'Dashboard',      href: '/dashboard',              icon: LayoutDashboard, roles: ['FLEET_MANAGER','DISPATCHER','SAFETY_OFFICER','FINANCIAL_ANALYST'] as Role[] },
-  { label: 'Vehicles',       href: '/fleet/vehicles',         icon: Truck,            roles: ['FLEET_MANAGER'] as Role[] },
-  { label: 'Drivers',        href: '/fleet/drivers',          icon: Users,            roles: ['FLEET_MANAGER','DISPATCHER','SAFETY_OFFICER'] as Role[] },
-  { label: 'Trips',          href: '/operations/trips',       icon: MapPin,           roles: ['FLEET_MANAGER','DISPATCHER'] as Role[] },
-  { label: 'Maintenance',    href: '/operations/maintenance', icon: Wrench,           roles: ['FLEET_MANAGER'] as Role[] },
-  { label: 'Fuel & Expenses',href: '/finance/fuel',           icon: Fuel,             roles: ['FLEET_MANAGER','FINANCIAL_ANALYST'] as Role[] },
-  { label: 'Analytics',      href: '/analytics',              icon: BarChart2,        roles: ['FLEET_MANAGER','FINANCIAL_ANALYST','SAFETY_OFFICER'] as Role[] },
-  { label: 'Settings',       href: '/settings',               icon: Settings,         roles: ['FLEET_MANAGER'] as Role[] },
+  { label: 'Dashboard',       href: '/dashboard',              icon: LayoutDashboard, roles: ['FLEET_MANAGER','DISPATCHER','SAFETY_OFFICER','FINANCIAL_ANALYST'] as Role[] },
+  { label: 'Vehicles',        href: '/fleet/vehicles',         icon: Truck,            roles: ['FLEET_MANAGER'] as Role[] },
+  { label: 'Drivers',         href: '/fleet/drivers',          icon: Users,            roles: ['FLEET_MANAGER','DISPATCHER','SAFETY_OFFICER'] as Role[] },
+  { label: 'Trips',           href: '/operations/trips',       icon: MapPin,           roles: ['FLEET_MANAGER','DISPATCHER'] as Role[] },
+  { label: 'Maintenance',     href: '/operations/maintenance', icon: Wrench,           roles: ['FLEET_MANAGER'] as Role[] },
+  { label: 'Fuel & Expenses', href: '/finance/fuel',           icon: Fuel,             roles: ['FLEET_MANAGER','FINANCIAL_ANALYST'] as Role[] },
+  { label: 'Analytics',       href: '/analytics',              icon: BarChart2,        roles: ['FLEET_MANAGER','FINANCIAL_ANALYST','SAFETY_OFFICER'] as Role[] },
+  { label: 'Settings',        href: '/settings',               icon: Settings,         roles: ['FLEET_MANAGER'] as Role[] },
 ]
 
 const roleBadgeColor: Record<Role, string> = {
@@ -45,22 +46,24 @@ export function Sidebar() {
   const role = (session?.user as any)?.role as Role | undefined
 
   return (
-    <aside className="flex flex-col h-full w-[220px] bg-slate-900 border-r border-slate-700 flex-shrink-0">
-      {/* Logo */}
-      <div className="px-5 py-5">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-bold text-lg text-amber-400 tracking-tight">TransitOps</span>
-        </div>
-        <p className="text-slate-400 text-[11px] ml-9">Smart Transport Platform</p>
+    <aside className="flex flex-col h-full w-[230px] bg-slate-900 border-r border-slate-700/60 flex-shrink-0">
+
+      {/* ── Logo ─────────────────────────────────────────────────── */}
+      <div className="flex flex-col items-center justify-center px-4 pt-5 pb-3">
+        <Image
+          src="/logo.png"
+          alt="TransitOps Logo"
+          width={160}
+          height={90}
+          className="object-contain drop-shadow-lg"
+          priority
+        />
       </div>
 
-      <div className="mx-4 border-t border-slate-700/60" />
+      <div className="mx-4 border-t border-slate-700/50" />
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
+      {/* ── Nav ──────────────────────────────────────────────────── */}
+      <nav className="flex-1 px-3 py-3 flex flex-col gap-0.5 overflow-y-auto">
         {navItems
           .filter(item => !role || item.roles.includes(role))
           .map(item => {
@@ -72,7 +75,7 @@ export function Sidebar() {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                   isActive
-                    ? 'bg-amber-500/20 text-amber-400 font-medium'
+                    ? 'bg-amber-500/15 text-amber-400 font-semibold border border-amber-500/20'
                     : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
                 }`}
               >
@@ -83,18 +86,18 @@ export function Sidebar() {
           })}
       </nav>
 
-      <div className="mx-4 border-t border-slate-700/60" />
+      <div className="mx-4 border-t border-slate-700/50" />
 
-      {/* User section */}
-      <div className="px-3 py-4">
-        <div className="flex items-center gap-3 px-2 mb-3">
-          <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+      {/* ── User ─────────────────────────────────────────────────── */}
+      <div className="px-3 py-3">
+        <div className="flex items-center gap-3 px-2 mb-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-md">
             {getInitials(session?.user?.name)}
           </div>
           <div className="min-w-0">
-            <p className="text-slate-100 text-sm font-medium truncate">{session?.user?.name || 'User'}</p>
+            <p className="text-slate-100 text-sm font-semibold truncate">{session?.user?.name || 'User'}</p>
             {role && (
-              <span className={`inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${roleBadgeColor[role]}`}>
+              <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full mt-0.5 ${roleBadgeColor[role]}`}>
                 {roleLabel[role]}
               </span>
             )}

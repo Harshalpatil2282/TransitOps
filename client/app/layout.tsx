@@ -5,6 +5,10 @@ import { Providers } from './providers'
 export const metadata: Metadata = {
   title: 'TransitOps — Smart Transport Platform',
   description: 'Enterprise fleet management and transit operations platform',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({
