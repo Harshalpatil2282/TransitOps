@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, Loader2, Zap, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -55,11 +56,17 @@ export default function LoginPage() {
       <div className="bg-slate-800 rounded-xl shadow-2xl p-8 border border-slate-700">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/20">
-            <Zap className="w-6 h-6 text-white" />
+          <div className="flex justify-center mb-3">
+            <Image
+              src="/logo.png"
+              alt="TransitOps"
+              width={180}
+              height={100}
+              className="object-contain drop-shadow-xl"
+              priority
+            />
           </div>
-          <h1 className="text-2xl font-bold text-amber-400 tracking-tight">TransitOps</h1>
-          <p className="text-slate-400 text-sm mt-1">Smart Transport Platform</p>
+          <p className="text-slate-400 text-sm">Sign in to your account</p>
         </div>
 
         {/* Error */}
