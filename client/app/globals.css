@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,60 +14,60 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   background-color: #0f172a;
   color: #f1f5f9;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
 }
 
 body {
   background-color: #0f172a;
   color: #f1f5f9;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+/* ─── Custom scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* Input base styles */
+/* ─── Form inputs ───────────────────────────────────────────────── */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="date"],
+input[type="tel"],
 select,
 textarea {
   background-color: #0f172a;
-  border: 1px solid #334155;
+  border: 1.5px solid #334155;
   color: #f1f5f9;
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   width: 100%;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+  line-height: 1.5;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   border-color: #f59e0b;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
 }
 
 input::placeholder,
@@ -75,12 +75,53 @@ textarea::placeholder {
   color: #475569;
 }
 
-/* Select options */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* Select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
 option {
   background-color: #1e293b;
   color: #f1f5f9;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Error input state */
+input.border-red-500,
+select.border-red-500 {
+  border-color: #ef4444 !important;
+}
+
+input.border-red-500:focus,
+select.border-red-500:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+/* Checkbox */
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  cursor: pointer;
+  accent-color: #f59e0b;
+  border-radius: 3px;
+}
+
+/* ─── Animations ────────────────────────────────────────────────── */
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.2s ease-in-out;
@@ -92,10 +133,13 @@ option {
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ─── Table tweaks ──────────────────────────────────────────────── */
+.tabular-nums { font-variant-numeric: tabular-nums; }
