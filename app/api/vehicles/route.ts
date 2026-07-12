@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = vehicleSchema.safeParse(body);
     if (!parsed.success) {
-      return failure(parsed.error.errors.map((e) => e.message).join(", "), 400);
+      return failure(parsed.error.issues.map((e: any) => e.message).join(", "), 400);
     }
 
     const { regNo, name, type, maxLoadKg, acquisitionCost, odometer, region, status } = parsed.data;
